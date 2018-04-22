@@ -1,0 +1,173 @@
+﻿@model Resistor_Calculator.Models.ResistorData
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<style>
+    .error {
+        color: red;
+        padding: 8px 8px 2px 8px;
+        box-sizing: border-box;
+        border-radius: 4px 0px 0px 4px;
+        font-weight: bold;
+        margin-left: -4px;
+    }
+
+    .control-labelval {
+        color: black;
+        background-color: #f1f1f1;
+        border: solid 1px #999;
+        font-weight: bold;
+        display: block;
+        height: 32px;
+        float: left;
+        width: 250px;
+        padding: 8px 8px 2px 8px;
+        box-sizing: border-box;
+        border-radius: 4px 0px 0px 4px;
+        font-weight: bold;
+        margin-left: -4px;
+    }
+
+    .control-label {
+        color: black;
+        background-color: #f1f1f1;
+        border: solid 1px #999;
+        font-weight: bold;
+        display: block;
+        width: 150px;
+        height: 32px;
+        float: left;
+        text-align: center;
+        vertical-align: middle;
+        padding: 8px 8px 2px 8px;
+        box-sizing: border-box;
+        border-radius: 4px 0px 0px 4px;
+        font-weight: bold;
+        margin-left: -4px;
+        width: 150px;
+    }
+
+    .dropdown {
+        color: black;
+        font-weight: bold;
+        display: block;
+        height: 32px;
+        padding: 8px 8px 2px 8px;
+        box-sizing: border-box;
+        border-radius: 4px 0px 0px 4px;
+        font-weight: bold;
+        margin-left: -4px;
+        width: 250px;
+    }
+</style>
+@{ string baseUrl = Request.Url.GetLeftPart(UriPartial.Authority);}
+<script>
+    $(function () {
+        var submitButton = $("#btnCalculate");
+        var infoForm = $("#infoForm");
+
+        submitButton.click(function () {
+            if(ValidateInfo())
+                SubmitInfo(infoForm);
+        });
+    });
+    function SubmitInfo(formContainer) {
+      
+        $.ajax({
+            url:"@baseUrl/ResistorCalculator/Index",
+            type: 'post',
+            data: formContainer.serialize(),
+            success: function(data) {
+                if (data && data!="" && data!=null) {
+                    $("#resisterval").text(data + " Ohms");//(data);
+                    // Clear the input tags
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+            }
+        });
+    }
+    function ValidateInfo() {
+        if ($("#SelectedBandColor1")[0].options[0].selected == true) {
+            $("[data-valmsg-for='SelectedBandColor1']").text("Please Select BandColor");
+            return false;
+        }
+        else {
+            $("[data-valmsg-for='SelectedBandColor1']").text("");
+        }
+        if ($("#SelectedBandColor2")[0].options[0].selected == true) {
+            $("[data-valmsg-for='SelectedBandColor2']").text("Please Select BandColor");
+            return false;
+        }
+        else {
+            $("[data-valmsg-for='SelectedBandColor2']").text("");
+        }
+        if ($("#SelectedMultiplier")[0].options[0].selected == true) {
+            $("[data-valmsg-for='SelectedMultiplier']").text("Please Select Multipler");
+            return false;
+        }
+        else {
+            $("[data-valmsg-for='SelectedMultiplier']").text("");
+        }
+        if ($("#SelectedTolerance")[0].options[0].selected == true) {
+            $("[data-valmsg-for='SelectedTolerance']").text("Please Select Tolerance");
+            return false;
+        }
+        else {
+            $("[data-valmsg-for='SelectedTolerance']").text("");
+        }
+        return true;
+    }
+</script>
+
+<fieldset id="infoForm">
+    <h2>Resistor Calculator</h2>
+
+    @Html.ValidationSummary(false, "", new { @class = "error" })
+    <table class="table">
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.BandColors, "1st Band:", new { @class = "control-label" })
+                @Html.DropDownListFor(model => model.SelectedBandColor1, Model.BandColors, "select", new { @class = "dropdown" })
+                @Html.ValidationMessageFor(model => model.SelectedBandColor1, "", new { @class = "error" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.BandColors, "2nd Band:", new { @class = "control-label" })
+                @Html.DropDownListFor(model => model.SelectedBandColor2, Model.BandColors, "select", new { @class = "dropdown" })
+                @Html.ValidationMessageFor(model => model.SelectedBandColor2, "", new { @class = "error" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.Multipliers, "Multiplier:", new { @class = "control-label" })
+                @Html.DropDownListFor(model => model.SelectedMultiplier, Model.Multipliers, "select", new { @class = "dropdown" })
+                @Html.ValidationMessageFor(model => model.SelectedMultiplier, "", new { @class = "error" })
+            </td>
+        </tr>
+        <tr>
+
+            <td>
+                @Html.LabelFor(model => model.Tolerances, "Tolerance:", new { @class = "control-label" })
+                @Html.DropDownListFor(model => model.SelectedTolerance, Model.Tolerances, "select", new { @class = "dropdown" })
+                @Html.ValidationMessageFor(model => model.SelectedTolerance, "", new { @class = "error" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.ResistorValue, "Resister Value: ", new { @class = "control-label" })
+                <label id="resisterval" class="control-labelval"></label>
+            </td>
+        </tr>
+        <tr>
+            <td>  <input type="button" value="Calculate" id="btnCalculate" /></td>
+        </tr>
+    </table>
+
+</fieldset>
+
